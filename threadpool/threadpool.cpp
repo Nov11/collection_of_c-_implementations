@@ -47,6 +47,8 @@ class ThreadPool {
     }
   }
 
+  ThreadPool(const ThreadPool &) = delete;
+  ThreadPool &operator=(const ThreadPool &) = delete;
   template<typename F, typename ... Args>
   auto addNewTask(F &&f, Args &&... args)
   -> std::future<typename std::result_of<F(Args...)>::type> {

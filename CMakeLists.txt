@@ -3,3 +3,4 @@ project(collections)
 
 set(CMAKE_CXX_STANDARD 14)
 add_subdirectory(threadpool)
+add_subdirectory(rwlock)
