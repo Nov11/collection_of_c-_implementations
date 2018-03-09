@@ -58,7 +58,7 @@ class ThreadPool {
       if (closed) {
         throw std::runtime_error("add new task to closed thread pool");
       }
-      tasks.push([taskPtr]() { (*taskPtr)(); });
+      tasks.emplace([taskPtr]() { (*taskPtr)(); });
     }
     cond.notify_one();
     return taskPtr->get_future();
