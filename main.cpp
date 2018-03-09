@@ -22,7 +22,7 @@ class ThreadPool {
         if (closed && tasks.empty()) {
           return;
         }
-        task = tasks.front();
+        task = std::move(tasks.front());
         tasks.pop();
       }
       task();
@@ -32,7 +32,7 @@ class ThreadPool {
   ThreadPool(int numberOfWorkers) :
       closed(false) {
     for (int i = 0; i < numberOfWorkers; i++) {
-      workers.emplace_back(std::thread(&ThreadPool::workRoutine, this));
+      workers.emplace_back(&ThreadPool::workRoutine, this);
     }
   }
 
@@ -52,16 +52,16 @@ class ThreadPool {
   -> std::future<typename std::result_of<F(Args...)>::type> {
     using Ret = typename std::result_of<F(Args...)>::type;
     auto function = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
-    auto task = std::make_shared<std::packaged_task<Ret()>>((function));
+    auto taskPtr = std::make_shared<std::packaged_task<Ret()>>(std::move(function));
     {
       std::lock_guard<std::mutex> lock_guard(mtx);
       if (closed) {
         throw std::runtime_error("add new task to closed thread pool");
       }
-      tasks.push([task]() { (*task)(); });
+      tasks.push([taskPtr]() { (*taskPtr)(); });
     }
     cond.notify_one();
-    return task->get_future();
+    return taskPtr->get_future();
   };
 };
 
@@ -70,10 +70,10 @@ int main() {
   // create thread pool with 4 worker threads
   ThreadPool pool(4);
 
-// enqueue and store future
+  // enqueue and store future
   auto result = pool.addNewTask([](int answer) { return answer; }, 42);
 
-// get result from future
+  // get result from future
   std::cout << result.get() << std::endl;
   return 0;
 }
