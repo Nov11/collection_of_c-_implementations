@@ -60,6 +60,10 @@ class ThreadPool {
       }
       tasks.emplace([taskPtr]() { (*taskPtr)(); });
     }
+    //code below will not compile. it needs packaged_task's copy ctor.
+//    auto aa = [tt=std::move(*taskPtr)]()mutable{tt();};
+//    tasks.push(std::packaged_task<Ret()>());
+//    tasks.back() = std::move(aa); nor emplace with aa or std::move(aa)
     cond.notify_one();
     return taskPtr->get_future();
   };

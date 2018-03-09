@@ -1,5 +1,5 @@
-this is not my creation.
+a collection of c++ implementations
 
-the original version is https://github.com/progschj/ThreadPool.
-
-I read the code and write again for practice purpose.
+|name|original|mine|
+|:-|:-|:-|
+|threadpool  |https://github.com/progschj/ThreadPool|threadpool|
