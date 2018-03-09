@@ -75,5 +75,14 @@ int main() {
 
   // get result from future
   std::cout << result.get() << std::endl;
+//  std::packaged_task<void()> p([](){ std::cout << "aa" << std::endl; });
+//  std::future<void> f = p.get_future();
+//  std::thread th([&](){p();});
+//  f.get();
+//  th.join();
+
+  auto voidResult = pool.addNewTask(
+      [](int param) { std::cout << "input:" << param << std::endl; }, 43);
+  voidResult.get();
   return 0;
 }
